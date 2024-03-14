@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using CodeBase.Infrastrusture.Services;
+using CodeBase.UnityComponents.UI.InventoryLogic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,6 +10,8 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
     {
         public Trigger ProcessingTrigger;
         public List<Trigger> logics;
+        public Item Key;
+        private InputService _inputService;
 
         private void Start()
         {
@@ -28,7 +32,11 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
                 if (logics.IndexOf(ProcessingTrigger) != logics.Count - 1)
                 {
                     ProcessingTrigger = logics[logics.IndexOf(ProcessingTrigger) + 1];
-                    ProcessingTrigger.Activate();
+                    if (ProcessingTrigger.Activate(Key) == false)
+                    {
+                        ProcessingTrigger = null;
+                        EndInteraction();
+                    }
                 }
                 else
                 {
@@ -37,10 +45,17 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
             }
         }
 
-        public void Interact()
+        public void Interact(InputService inputService, Item item = null)
         {
+            _inputService = inputService;
+            _inputService.DeactivateGameplay();
+
             ProcessingTrigger = logics[0];
-            ProcessingTrigger.Activate();
+            Key = item;
+            if (ProcessingTrigger.Activate(Key) == false)
+            {
+                ProcessingTrigger = null;
+            }
         }
 
         public void Hold()
@@ -50,7 +65,9 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
 
         public void EndInteraction()
         {
+            _inputService.ActivateGameplay();
             ProcessingTrigger = null;
+            Key = null;
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeBase.UnityComponents.UI.InventoryLogic;
 
 namespace CodeBase.UnityComponents.Gameobject.Triggers
 {
     public interface ITriggerLogic
     {
-        void Activate();
+        bool Activate(Item item = null);
 
         void Processing();
 

@@ -1,4 +1,5 @@
 using CodeBase.Infrastrusture.Services;
+using CodeBase.UnityComponents.UI.InventoryLogic;
 using System;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace CodeBase.UnityComponents.Player
             if (_input.LeftMousePressed())
             {
                 _interactableObject = GetInteractableObject();
-                _interactableObject?.Interact();
+                _interactableObject?.Interact(_input);
 
                 _playerUtilities.Inventory.CloseItemInfo();
             }
@@ -33,6 +34,14 @@ namespace CodeBase.UnityComponents.Player
 
             if (_input.LeftMouseReleased())
             {
+                if(_playerUtilities.Inventory.ActiveItem != null)
+                {
+                    _interactableObject = GetInteractableObject();
+                    _interactableObject.Interact(_input, _playerUtilities.Inventory.ActiveItem as Item);
+                }
+
+                _playerUtilities.Inventory.ActiveItem?.DropItem();
+
                 _interactableObject = null;
             }
 
@@ -47,7 +56,7 @@ namespace CodeBase.UnityComponents.Player
         {
             Collider2D hitedObject = ShootRay().collider;
 
-            if (hitedObject != null && hitedObject.TryGetComponent<IInteractable>(out IInteractable interactableObject))
+            if (hitedObject != null && hitedObject.TryGetComponent(out IInteractable interactableObject))
             {
                 Debug.Log(hitedObject.name);
                 return interactableObject;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CodeBase.UnityComponents.UI.InventoryLogic;
+using UnityEngine;
 
 namespace CodeBase.UnityComponents.Gameobject.Triggers
 {
@@ -7,15 +8,16 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
         public int Priority;
         public bool IsInProcess;
 
-        public virtual void Activate()
+        public virtual bool Activate(Item item = null)
         {
             Debug.Log(gameObject.name + " Logic Activated");
-            IsInProcess = true;
             Processing();
+            return true;
         }
 
         public virtual void Processing()
         {
+            IsInProcess = true;
             Debug.Log(gameObject.name + " In Process");
         }
 
