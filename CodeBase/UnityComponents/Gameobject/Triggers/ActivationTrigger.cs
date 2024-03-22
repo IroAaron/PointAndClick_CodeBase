@@ -1,4 +1,6 @@
-﻿using CodeBase.Infrastrusture.Services;
+﻿using Assets.CodeBase.UnityComponents.Gameobject.Triggers;
+using Assets.CodeBase.UnityComponents.Gameobject.Triggers.Logics;
+using CodeBase.Infrastrusture.Services;
 using CodeBase.UnityComponents.UI.InventoryLogic;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,33 +10,41 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
 {
     public class ActivationTrigger : MonoBehaviour, IInteractable
     {
-        public Trigger ProcessingTrigger;
-        public List<Trigger> logics;
-        public Item Key;
+        public TriggerLogic ProcessingTrigger;
+        public List<TriggerLogic> Logics;
+        private Item _key;
         private InputService _inputService;
 
         private void Start()
         {
-            logics = new List<Trigger>(GetComponents<Trigger>());
+            Logics = new List<TriggerLogic>(GetComponents<TriggerLogic>());
 
-            logics = logics.OrderBy(logic => logic.Priority).ToList();
+            Logics = Logics.OrderBy(logic => logic.Priority).ToList();
         }
 
         private void Update()
         {
             if (ProcessingTrigger)
             {
-                while (ProcessingTrigger.IsInProcess)
+                if (ProcessingTrigger.IsInProcess)
                 {
                     return;
                 }
 
-                if (logics.IndexOf(ProcessingTrigger) != logics.Count - 1)
+                if (Logics.IndexOf(ProcessingTrigger) != Logics.Count - 1)
                 {
-                    ProcessingTrigger = logics[logics.IndexOf(ProcessingTrigger) + 1];
-                    if (ProcessingTrigger.Activate(Key) == false)
+                    if (Logics[Logics.IndexOf(ProcessingTrigger) + 1].IsEnable == false)
                     {
-                        ProcessingTrigger = null;
+                        ProcessingTrigger = Logics[Logics.IndexOf(ProcessingTrigger) + 1];
+                        return;
+                    }
+                    else
+                    {
+                        ProcessingTrigger = Logics[Logics.IndexOf(ProcessingTrigger) + 1];
+                    }
+
+                    if (ProcessingTrigger.Activate(_key) == false)
+                    {
                         EndInteraction();
                     }
                 }
@@ -50,9 +60,9 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
             _inputService = inputService;
             _inputService.DeactivateGameplay();
 
-            ProcessingTrigger = logics[0];
-            Key = item;
-            if (ProcessingTrigger.Activate(Key) == false)
+            ProcessingTrigger = Logics[0];
+            _key = item;
+            if (ProcessingTrigger.Activate(_key) == false)
             {
                 ProcessingTrigger = null;
             }
@@ -67,7 +77,7 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers
         {
             _inputService.ActivateGameplay();
             ProcessingTrigger = null;
-            Key = null;
+            _key = null;
         }
     }
 }

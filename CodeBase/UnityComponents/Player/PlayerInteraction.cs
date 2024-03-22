@@ -1,6 +1,5 @@
 using CodeBase.Infrastrusture.Services;
 using CodeBase.UnityComponents.UI.InventoryLogic;
-using System;
 using UnityEngine;
 
 namespace CodeBase.UnityComponents.Player
