@@ -1,4 +1,5 @@
 ﻿using CodeBase.Infrastrusture.Services;
+using CodeBase.UnityComponents.Gameobject;
 using CodeBase.UnityComponents.UI;
 using CodeBase.UnityComponents.UI.InventoryLogic;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace CodeBase.UnityComponents.Player
     {
         public Inventory Inventory;
         public Journal Journal;
+        public Room CurrentRoom;
+        public Window CurrentWindow;
 
         public InputService Input;
 

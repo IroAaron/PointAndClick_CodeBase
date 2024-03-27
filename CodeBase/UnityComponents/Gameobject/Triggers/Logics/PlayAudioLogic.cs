@@ -9,27 +9,36 @@ namespace CodeBase.UnityComponents.Gameobject.Triggers.Logics
         private AudioClip _audioClip;
         private AudioSource _audioSource;
 
+        [SerializeField]
+        private bool _isWaitForAudio = true;
+
         public override void Processing()
         {
             base.Processing();
             _audioSource = gameObject.AddComponent<AudioSource>();
+
             _audioSource.playOnAwake = false;
             _audioSource.clip = _audioClip;
             _audioSource.Play();
-            StartCoroutine(WaitForSound(_audioClip.length));
-        }
 
-        public override void Deactivate()
-        {
-            Destroy(_audioSource);
-            base.Deactivate();
+            StartCoroutine(WaitForSound(_audioClip.length));
+
+            if (!_isWaitForAudio)
+            {
+                Deactivate();
+            }
         }
 
         private IEnumerator WaitForSound(float seconds)
         {
             yield return new WaitForSeconds(seconds);
 
-            Deactivate();
+            Destroy(_audioSource);
+
+            if (_isWaitForAudio)
+            {
+                Deactivate();
+            }
         }
     }
 }

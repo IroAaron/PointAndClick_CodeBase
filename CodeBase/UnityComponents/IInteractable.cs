@@ -5,8 +5,11 @@ namespace CodeBase.UnityComponents
 {
     public interface IInteractable
     {
-        void Interact(InputService inputService, Item item = null);
-        void Hold();
+        void Interact(Item item = null);
+        void Hold()
+        {
+
+        }
         void EndInteraction();
     }
 }

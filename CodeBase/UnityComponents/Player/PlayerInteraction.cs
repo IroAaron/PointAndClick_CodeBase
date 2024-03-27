@@ -1,5 +1,6 @@
 using CodeBase.Infrastrusture.Services;
 using CodeBase.UnityComponents.UI.InventoryLogic;
+using System.Linq;
 using UnityEngine;
 
 namespace CodeBase.UnityComponents.Player
@@ -21,7 +22,7 @@ namespace CodeBase.UnityComponents.Player
             if (_input.LeftMousePressed())
             {
                 _interactableObject = GetInteractableObject();
-                _interactableObject?.Interact(_input);
+                _interactableObject?.Interact();
 
                 _playerUtilities.Inventory.CloseItemInfo();
             }
@@ -36,7 +37,7 @@ namespace CodeBase.UnityComponents.Player
                 if(_playerUtilities.Inventory.ActiveItem != null)
                 {
                     _interactableObject = GetInteractableObject();
-                    _interactableObject.Interact(_input, _playerUtilities.Inventory.ActiveItem as Item);
+                    _interactableObject.Interact(_playerUtilities.Inventory.ActiveItem as Item);
                 }
 
                 _playerUtilities.Inventory.ActiveItem?.DropItem();
@@ -53,7 +54,7 @@ namespace CodeBase.UnityComponents.Player
 
         private IInteractable GetInteractableObject()
         {
-            Collider2D hitedObject = ShootRay().collider;
+            Collider2D hitedObject = ShootRays();
 
             if (hitedObject != null && hitedObject.TryGetComponent(out IInteractable interactableObject))
             {
@@ -66,14 +67,27 @@ namespace CodeBase.UnityComponents.Player
             }
         }
 
-        private RaycastHit2D ShootRay()
+        private Collider2D ShootRays()
         {
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = 10f;
             Vector3 worldPosition = GetComponent<Camera>().ScreenToWorldPoint(mousePos);
-            RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector3.forward);
+            RaycastHit2D[] hitTriggers = Physics2D.RaycastAll(worldPosition, Vector3.forward);
 
-            return hit;
+            foreach (var hitTrigger in hitTriggers)
+            {
+                if (hitTrigger.collider.TryGetComponent(out IInteractable trigger))
+                {
+                    return hitTrigger.collider;
+                }
+            }
+
+            if(hitTriggers.Length == 0)
+            {
+                _playerUtilities.CurrentWindow?.CloseWindow();
+            }
+
+            return null;
         }
     }
 }

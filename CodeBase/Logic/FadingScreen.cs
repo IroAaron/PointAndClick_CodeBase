@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DG.Tweening;
 using Fungus;
@@ -32,9 +33,24 @@ namespace CodeBase.Logic
             FageScreen.DOFade(endAlpha, fadeDuration);
         }
 
+        public void Show(float endAlpha, float fadeDuration, TweenCallback action)
+        {
+            FageScreen.DOFade(endAlpha, fadeDuration).OnComplete(action);
+        }
+
         public void Hide()
         {
             FageScreen.DOFade(0, FadeDuration);
+        }
+
+        public void Hide(float fadeDuration)
+        {
+            FageScreen.DOFade(0, fadeDuration);
+        }
+
+        public void Hide(float fadeDuration, TweenCallback action)
+        {
+            FageScreen.DOFade(0, fadeDuration).OnComplete(action);
         }
     }
 }
